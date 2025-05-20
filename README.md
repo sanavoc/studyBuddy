@@ -1,5 +1,3 @@
-Parfait, je vais rédiger un modèle de README clair et structuré pour ton application *StudyBuddy*, destiné à la fois aux développeurs et aux utilisateurs. Il présentera l'idée générale, les fonctionnalités principales, la structure technique (Java Spring, Angular, PostgreSQL), ainsi qu'une description des tables principales d'après ton script SQL. Je te reviens avec une proposition complète très bientôt.
-
 
 # StudyBuddy – Votre compagnon d’étude collaboratif
 
