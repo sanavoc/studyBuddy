@@ -40,10 +40,10 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        UserDetails user = (UserDetails) userRepo.findByEmail(request.getEmail())
+        User user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Not found"));
 
         String token = jwtUtil.generateToken(user);
-        return new AuthResponse(token);
+        return new AuthResponse(token, user.getId().toString());
     }
 }
