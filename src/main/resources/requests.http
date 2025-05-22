@@ -37,7 +37,7 @@ POST http://localhost:8080/auth/reset-password
 Content-Type: application/json
 
 {
-  "token": "abcd-efgh-1234",
+  "token": "2e92d7b7-7f0c-4f54-b31b-43729ff3f615",
   "newPassword": "newStrongPassword456"
 }
 
@@ -48,7 +48,7 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "anis2@example.com",
+  "email": "anis@example.com",
   "password": "newStrongPassword456"
 }
 
