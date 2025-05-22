@@ -1,7 +1,7 @@
 package com.esgi.studyBuddy.config;
 
-import com.esgi.studyBuddy.user.User;
-import com.esgi.studyBuddy.user.UserRepository;
+import com.esgi.studyBuddy.model.User;
+import com.esgi.studyBuddy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
