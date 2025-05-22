@@ -1,5 +1,6 @@
 package com.esgi.studyBuddy.config;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -18,31 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@Profile("!dev")
-public class SecurityConfig {
-    private final JwtFilter jwtFilter;
+@Profile("dev") // Only active in dev profile
+@AllArgsConstructor
+public class DevSecurityConfig {
     private final UserDetailsService userDetailsService;
-
-    public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth/**",  "/swagger-ui/**",
-                            "/v3/api-docs/**").permitAll();
-                    auth.anyRequest().authenticated();
-                })
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authProvider());
-
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
     // ✅ Bean PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -61,5 +41,13 @@ public class SecurityConfig {
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder()); // ← utilise le bean
         return provider;
+    }
+
+    @Bean
+    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()); // allow everything
+        return http.build();
     }
 }

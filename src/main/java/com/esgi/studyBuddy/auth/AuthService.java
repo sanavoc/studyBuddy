@@ -6,6 +6,7 @@ import com.esgi.studyBuddy.auth.dto.RegisterRequest;
 import com.esgi.studyBuddy.jwt.JwtUtil;
 import com.esgi.studyBuddy.model.User;
 import com.esgi.studyBuddy.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,18 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authManager;
 
-    public AuthService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authManager) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.authManager = authManager;
-    }
 
     public void register(RegisterRequest request) {
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
