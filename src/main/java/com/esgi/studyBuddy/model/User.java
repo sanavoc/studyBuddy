@@ -1,20 +1,15 @@
-package com.esgi.studyBuddy.user;
+package com.esgi.studyBuddy.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -71,42 +66,5 @@ public class User implements UserDetails {
     @Override
     public String getPassword() {
         return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-    public String getDisplayName() {
-        return displayName;
-    }
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-    public boolean isVerified() {
-        return verified;
-    }
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-    public UUID getId() {
-        return id;
     }
 }

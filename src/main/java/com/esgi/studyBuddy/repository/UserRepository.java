@@ -1,5 +1,6 @@
-package com.esgi.studyBuddy.user;
+package com.esgi.studyBuddy.repository;
 
+import com.esgi.studyBuddy.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
