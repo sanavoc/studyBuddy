@@ -1,5 +1,6 @@
 package com.esgi.studyBuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,6 +35,7 @@ public class User implements UserDetails {
     private Instant createdAt = Instant.now();
 
     // UserDetails implementation methods
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
