@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -17,6 +18,10 @@ import java.util.UUID;
 public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+
+    public List<Friendship> getAllFriendships() {
+        return friendshipRepository.findAll();
+    }
 
     @Transactional
     public void sendRequest(UUID from, UUID to) {

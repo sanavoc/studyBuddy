@@ -1,12 +1,12 @@
 package com.esgi.studyBuddy.controller;
 
+import com.esgi.studyBuddy.model.Friendship;
 import com.esgi.studyBuddy.service.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 
@@ -15,6 +15,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FriendshipController {
     private final FriendshipService friendshipService;
+
+    @GetMapping("/friendships")
+    public ResponseEntity<List<Friendship>> getAllFriendships() {
+        return ResponseEntity.ok(friendshipService.getAllFriendships());
+    }
 
     @PostMapping("/request")
     public ResponseEntity<Void> sendRequest(@RequestParam UUID from, @RequestParam UUID to) {
