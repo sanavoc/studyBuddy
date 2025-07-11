@@ -25,6 +25,7 @@ public class User implements UserDetails {
     @Id
     private UUID id = UUID.randomUUID();
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
