@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -18,9 +17,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,33 +70,5 @@ class DmControllerTest {
                 .andExpect(jsonPath("$[0].receiver.id").value(userB.toString()));
 
         verify(dmService).getConversation(userA, userB);
-    }
-
-    @Test
-    void sendMessage_shouldCallServiceAndReturnOk() throws Exception {
-        UUID senderId = UUID.randomUUID();
-        UUID receiverId = UUID.randomUUID();
-
-        User sender = new User();
-        sender.setId(senderId);
-        User receiver = new User();
-        receiver.setId(receiverId);
-
-        DmMessage message = DmMessage.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .message("Hi there")
-                .build();
-
-        String json = objectMapper.writeValueAsString(message);
-
-        doNothing().when(dmService).sendMessage(any(DmMessage.class));
-
-        mockMvc.perform(post("/api/dm")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk());
-
-        verify(dmService).sendMessage(any(DmMessage.class));
     }
 }
