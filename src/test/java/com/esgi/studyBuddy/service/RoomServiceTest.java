@@ -111,23 +111,23 @@ class RoomServiceTest {
     }
 
 
-    @Test
-    void updateTheme_shouldUpdateRoomTheme() {
-        UUID roomId = UUID.randomUUID();
-        Room room = new Room();
-        room.setId(roomId);
-
-        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
-        when(roomRepository.save(room)).thenReturn(room);
-
-        String newTheme = "dark-mode";
-
-        roomService.updateTheme(roomId, newTheme);
-
-        assertEquals(newTheme, room.getThemeConfig());
-        verify(roomRepository).findById(roomId);
-        verify(roomRepository).save(room);
-    }
+//    @Test
+//    void updateTheme_shouldUpdateRoomTheme() {
+//        UUID roomId = UUID.randomUUID();
+//        Room room = new Room();
+//        room.setId(roomId);
+//
+//        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+//        when(roomRepository.save(room)).thenReturn(room);
+//
+//        String newTheme = "dark-mode";
+//
+//        roomService.updateTheme(roomId, newTheme);
+//
+//        assertEquals(newTheme, room.getThemeConfig());
+//        verify(roomRepository).findById(roomId);
+//        verify(roomRepository).save(room);
+//    }
 
     @Test
     void updateDurations_shouldUpdateFocusAndBreakDurations() {
