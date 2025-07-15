@@ -1,5 +1,6 @@
 package com.esgi.studyBuddy.service;
 
+import ch.qos.logback.classic.Logger;
 import com.esgi.studyBuddy.DTO.RoomDurationUpdateRequest;
 import com.esgi.studyBuddy.model.*;
 import com.esgi.studyBuddy.repository.RoomMemberRepository;
@@ -7,28 +8,74 @@ import com.esgi.studyBuddy.repository.RoomRepository;
 import com.esgi.studyBuddy.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import com.esgi.studyBuddy.DTO.AiRoomJoinEvent;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final KafkaTemplate<String, AiRoomJoinEvent> kafkaTemplate;
+
+    private static final String AI_EMAIL = "ai@studybuddy.com";
 
     @Transactional
     public UUID createRoom(Room room) {
+        // 1. Save the room
         Room saved = roomRepository.save(room);
-        RoomMember member = RoomMember.builder()
+
+        // 2. Add the room owner as a member
+        RoomMember ownerMember = RoomMember.builder()
                 .room(saved)
                 .user(saved.getOwner())
                 .userId(saved.getOwner().getId())
                 .roomId(saved.getId())
                 .role(UserRole.owner)
                 .build();
-        roomMemberRepository.save(member);
+        roomMemberRepository.save(ownerMember);
+
+        // 3. Get or create an AI user
+        User aiUser = userRepository.findByEmail(AI_EMAIL).orElseGet(() -> {
+            User ai = new User();
+            ai.setEmail(AI_EMAIL);
+            ai.setDisplayName("StudyBuddy AI");
+            ai.setVerified(true);
+            ai.setPassword("dummy-password"); // never used
+            return userRepository.save(ai);
+        });
+
+        // 4. Add an AI user as a member
+        RoomMember aiMember = RoomMember.builder()
+                .room(saved)
+                .user(aiUser)
+                .userId(aiUser.getId())
+                .roomId(saved.getId())
+                .role(UserRole.member)
+                .build();
+        roomMemberRepository.save(aiMember);
+
+        // 5. Send Kafka event to AI microservice
+        AiRoomJoinEvent event = new AiRoomJoinEvent(saved.getId(), aiUser.getId(), saved.getTopic());
+        kafkaTemplate.send("ai-room-events", event)
+                .whenComplete((result, ex) -> {
+                    if (ex == null) {
+                        log.info("Message sent successfully to topic {} with offset {}",
+                                "ai-room-events", result.getRecordMetadata().offset());
+                    } else {
+                        log.error("Failed to send message to Kafka: {}", ex.getMessage());
+                    }
+                });
+        log.info("Sent AI join event for room {}", saved.getId());
+
+
         return saved.getId();
     }
 

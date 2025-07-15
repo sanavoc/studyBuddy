@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -39,14 +36,17 @@ public class Room {
     private String institution;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer focusDuration = 25;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer breakDuration = 5;
 
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "text")
     private String themeConfig;
 
+    @Builder.Default
     private boolean isActive = true;
 
     @CreationTimestamp
