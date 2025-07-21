@@ -11,8 +11,13 @@ import lombok.RequiredArgsConstructor;
 import com.esgi.studyBuddy.DTO.AiRoomJoinEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -24,6 +29,7 @@ public class RoomService {
     private final UserRepository userRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final KafkaTemplate<String, AiRoomJoinEvent> kafkaTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private static final String AI_EMAIL = "ai@studybuddy.com";
 
@@ -108,4 +114,54 @@ public class RoomService {
         if (request.getBreakDuration() != null) room.setBreakDuration(request.getBreakDuration());
         roomRepository.save(room);
     }
+    private Map<String, Object> buildTimerPayload(Room room) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("roomId", room.getId());
+        payload.put("timerRunning", room.isTimerRunning());
+        payload.put("timerStartedAt", room.getTimerStartedAt());
+        payload.put("isOnBreak", room.isOnBreak());
+        payload.put("focusDuration", room.getFocusDuration());
+        payload.put("breakDuration", room.getBreakDuration());
+        return payload;
+    }
+    @Transactional
+    public void startPomodoroTimer(UUID roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow();
+        room.setTimerRunning(true);
+        room.setTimerStartedAt(Instant.now());
+        room.setOnBreak(false);
+        roomRepository.save(room);
+
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/timer", buildTimerPayload(room));
+    }
+
+    @Transactional
+    public void pausePomodoroTimer(UUID roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow();
+        room.setTimerRunning(false);
+        roomRepository.save(room);
+
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/timer", buildTimerPayload(room));
+    }
+
+    @Transactional
+    public void resumePomodoroTimer(UUID roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow();
+        room.setTimerRunning(true);
+        roomRepository.save(room);
+
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/timer", buildTimerPayload(room));
+    }
+
+    @Transactional
+    public void resetPomodoroTimer(UUID roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow();
+        room.setTimerRunning(false);
+        room.setTimerStartedAt(null);
+        room.setOnBreak(false);
+        roomRepository.save(room);
+
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/timer", buildTimerPayload(room));
+    }
+
 }

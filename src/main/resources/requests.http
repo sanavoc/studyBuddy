@@ -27,10 +27,7 @@ Content-Type: application/json
   "email": "anis@example.com"
 }
 
-# After this request, check the console log for the reset token URL
-# Example printed token: http://localhost:4200/reset-password?token=abcd-efgh-1234
 
-###
 
 ### Reset password (copy the token printed in console below)
 POST http://localhost:8080/auth/reset-password

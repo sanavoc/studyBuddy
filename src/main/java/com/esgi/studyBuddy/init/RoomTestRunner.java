@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class RoomTestRunner implements CommandLineRunner {
@@ -17,7 +19,7 @@ public class RoomTestRunner implements CommandLineRunner {
     private final RoomMessageService roomMessageService;
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws InterruptedException {
         User user = new User();
         user.setEmail("owner@example.com");
         user.setPassword("dummy");
@@ -32,15 +34,31 @@ public class RoomTestRunner implements CommandLineRunner {
                 .topic("Algebra")
                 .build();
 
-        roomService.createRoom(room);
+        UUID roomId = roomService.createRoom(room);
         System.out.println("Room created successfully.");
-        // 3. Post regular message
-        roomMessageService.saveMessage(room.getId(), user.getId(), "This is a regular message.");
-        System.out.println("Regular message posted.");
 
-        // 4. Post AI-triggered message
-        roomMessageService.saveMessageAndNotifyAI(room.getId(), user.getId(), "What is the quadratic formula?");
+        // Post messages
+        roomMessageService.saveMessage(roomId, user.getId(), "This is a regular message.");
+        System.out.println("Regular message posted.");
+        roomMessageService.saveMessageAndNotifyAI(roomId, user.getId(), "What is the quadratic formula?");
         System.out.println("AI-triggered message posted.");
+
+        // Timer logic
+        roomService.startPomodoroTimer(roomId);
+        System.out.println("Timer started.");
+
+        Thread.sleep(2000); // simulate wait time
+
+        roomService.pausePomodoroTimer(roomId);
+        System.out.println("Timer paused.");
+
+        roomService.resumePomodoroTimer(roomId);
+        System.out.println("Timer resumed.");
+
+        roomService.resetPomodoroTimer(roomId);
+        System.out.println("Timer reset.");
+
     }
+
 }
 

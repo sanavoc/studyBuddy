@@ -38,4 +38,15 @@ public class RoomController {
         roomService.joinRoom(roomId, userId);
         return ResponseEntity.ok().build();
     }
+    @PostMapping("/room/{roomId}/start-timer")
+    public ResponseEntity<Void> startTimer(@PathVariable UUID roomId) {
+        roomService.startPomodoroTimer(roomId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/room/{roomId}/stop-timer")
+    public ResponseEntity<Void> stopTimer(@PathVariable UUID roomId) {
+        roomService.resetPomodoroTimer(roomId);
+        return ResponseEntity.ok().build();
+    }
 }

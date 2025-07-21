@@ -51,4 +51,14 @@ public class Room {
 
     @CreationTimestamp
     private Instant createdAt;
+
+    @Column(name = "timer_running")
+    private boolean timerRunning = false;
+
+    @Column(name = "timer_started_at")
+    private Instant timerStartedAt;
+
+    @Column(name = "is_on_break")
+    private boolean isOnBreak = false;
+
 }
